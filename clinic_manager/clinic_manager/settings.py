@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'drf_yasg',
     'oauth2_provider',
+    'social_django'     # đăng nhập bằng fb
     # 'ckeditor_uploader'
 ]
 
@@ -50,6 +51,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'social_django.middleware.SocialAuthExceptionMiddleware',   #fb
+    # 'social_django.context_processors.backends'
 ]
 
 ROOT_URLCONF = 'clinic_manager.urls'
@@ -139,3 +142,24 @@ REST_FRAMEWORK = {
         'oauth2_provider.contrib.rest_framework.OAuth2Authentication',
     )
 }
+
+# setting cho facebook
+AUTHENTICATION_BACKENDS = [
+    'social_core.backends.facebook.FacebookOAuth2',
+    'django.contrib.auth.backends.ModelBackend',
+]
+#
+LOGIN_URL = 'login'
+LOGIN_REDIRECT_URL = 'home'
+LOGOUT_URL = 'logout'
+LOGOUT_REDIRECT_URL = 'login'
+#
+SOCIAL_AUTH_FACEBOOK_KEY = '893789679094872'
+SOCIAL_AUTH_FACEBOOK_SECRET = '1c4cf1353d5a18d9b66b934a73a74336'
+#
+# #for extra infor
+SOCIAL_AUTH_FACEBOOK_SCOPE = [
+    'email',
+]
+
+

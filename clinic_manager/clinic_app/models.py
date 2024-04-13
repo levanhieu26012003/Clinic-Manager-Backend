@@ -39,6 +39,7 @@ class User(AbstractUser, BaseModel):
     def __str__(self):
         return self.get_full_name()
 
+
 class Admin(User):
     pass
 
@@ -71,9 +72,9 @@ class Appointment(BaseModel):
         APPROVED = 'approved', 'Approved'
         CANCELLED = 'cancelled', 'Cancelled'
         COMPLETE = "complete", "Complete"
+
     # class TimeChoice(models.TextChoices):
     #     Time = '80', 'Pending'
-
 
     patient = models.ForeignKey(Patient, on_delete=models.CASCADE)
     doctor = models.ForeignKey(Doctor, on_delete=models.CASCADE)
@@ -131,3 +132,5 @@ class PrescriptionMedicine(BaseModel):
     medicine = models.ForeignKey(Medicine, on_delete=models.CASCADE, null=True)
     prescription = models.ForeignKey(Prescription, on_delete=models.CASCADE, null=True)
     quantity = models.PositiveSmallIntegerField()
+
+
