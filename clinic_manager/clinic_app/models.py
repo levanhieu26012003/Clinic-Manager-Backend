@@ -3,11 +3,6 @@ from django.db import models
 from cloudinary.models import CloudinaryField
 import DateTime
 
-GENDER_CHOISES = (
-    ("MALE", "MALE"),
-    ("FEMALE", "FEMALE"),
-)
-
 
 class BaseModel(models.Model):
     created_date = models.DateTimeField(auto_now_add=True, null=True)
@@ -27,11 +22,19 @@ class Schedule(BaseModel):
 
 
 class User(AbstractUser, BaseModel):
-    first_name = models.CharField(null=False, max_length=30)
-    last_name = models.CharField(null=False, max_length=30)
+    class GenderChoice(models.TextChoices):
+        Male = "Male"
+        Female = "Female"
+
+    class Role(models.TextChoices):
+        Doctor = "Doctor"
+        Nurse = "Nurse"
+        Patient = "Patient"
+
     phone_number = models.CharField(max_length=20)
-    sex = models.CharField(max_length=10, choices=GENDER_CHOISES, null=True)
+    sex = models.CharField(max_length=10, choices=GenderChoice, null=True)
     avatar = CloudinaryField(null=True)
+    role = models.CharField(null=False, choices=Role, default=Role.Patient, max_length=10)
 
     # class Meta:
     #     abstract = True
@@ -40,16 +43,30 @@ class User(AbstractUser, BaseModel):
         return self.get_full_name()
 
 
-class Admin(User):
-    pass
-
-
 class Doctor(User):
     speciality = models.CharField(max_length=30, default="Generally")
+
+    class Meta:
+        verbose_name = "Doctor"
 
 
 class Nurse(User):
     department = models.CharField(max_length=100, null=True)
+
+    class Meta:
+        verbose_name = "Nurse"
+
+
+class Admin(User):
+    class Meta:
+        verbose_name = "Admin"
+
+
+class Patient(User):
+    date_of_birth = models.DateField(null=True)
+
+    class Meta:
+        verbose_name = "Patient"
 
 
 class DoctorSchedule(BaseModel):
@@ -57,28 +74,30 @@ class DoctorSchedule(BaseModel):
     schedule = models.ForeignKey(Schedule, on_delete=models.CASCADE)
 
 
+
+
 class NurseSchedule(BaseModel):
-    Nurse = models.ForeignKey(Nurse, on_delete=models.CASCADE)
+    nurse = models.ForeignKey(Nurse, on_delete=models.CASCADE)
     schedule = models.ForeignKey(Schedule, on_delete=models.CASCADE)
 
 
-class Patient(User):
-    date_of_birth = models.DateField(null=True)
+
 
 
 class Appointment(BaseModel):
     class StatusChoices(models.TextChoices):
-        PENDING = 'pending', 'Pending'
-        APPROVED = 'approved', 'Approved'
-        CANCELLED = 'cancelled', 'Cancelled'
-        COMPLETE = "complete", "Complete"
+        PENDING = 'pending',
+        APPROVED = 'approved',
+        CANCELLED = 'cancelled',
+        COMPLETE = 'complete',
 
-    # class TimeChoice(models.TextChoices):
+        # class TimeChoice(models.TextChoices):
+
     #     Time = '80', 'Pending'
 
-    patient = models.ForeignKey(Patient, on_delete=models.CASCADE)
-    doctor = models.ForeignKey(Doctor, on_delete=models.CASCADE)
-    nurse = models.ForeignKey(Nurse, on_delete=models.CASCADE, null=True)
+    patient = models.ForeignKey(Patient, on_delete=models.CASCADE, related_name='appointments')
+    doctor = models.ForeignKey(Doctor, on_delete=models.CASCADE, related_name='appointments')
+    nurse = models.ForeignKey(Nurse, on_delete=models.CASCADE, null=True, related_name='appointments')
     time = models.TimeField()
     date = models.DateField()
     order_number = models.PositiveIntegerField()
@@ -121,8 +140,8 @@ class Prescription(BaseModel):  # Đơn thuốc
     service = models.ForeignKey(Service, on_delete=models.CASCADE)
 
 
-class Bill():  # Hoắ đơn
-    prescription = models.OneToOneField(Prescription, related_name='prescription', primary_key=True,
+class Bill(BaseModel):  # Hoắ đơn
+    prescription = models.OneToOneField(Prescription, related_name='bill', primary_key=True,
                                         on_delete=models.CASCADE, null=False)
     nurse = models.ForeignKey(Nurse, on_delete=models.SET_NULL, null=True)
     total = models.FloatField()
@@ -132,5 +151,3 @@ class PrescriptionMedicine(BaseModel):
     medicine = models.ForeignKey(Medicine, on_delete=models.CASCADE, null=True)
     prescription = models.ForeignKey(Prescription, on_delete=models.CASCADE, null=True)
     quantity = models.PositiveSmallIntegerField()
-
-

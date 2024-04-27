@@ -21,6 +21,8 @@ from rest_framework import permissions
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
 
+# from clinic_app.admin import custom_admin_site
+
 # from clinic_app import views
 
 schema_view = get_schema_view(
@@ -50,4 +52,5 @@ urlpatterns = [
             name='schema-redoc'),
     path('o/', include('oauth2_provider.urls',
                        namespace='oauth2_provider')),
+    # path('admin-doctor/', admin_doctor_site.urls),
 ]

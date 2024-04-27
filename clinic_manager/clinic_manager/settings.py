@@ -24,7 +24,7 @@ SECRET_KEY = 'django-insecure-0jpo=x9qvt-*8h5@fae&@z50tvl*iu$#3#e*@$1ww&=h6844@j
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['192.168.1.34','127.0.0.1']
 
 # Application definition
 
@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'drf_yasg',
     'oauth2_provider',
+    'corsheaders',
     'social_django'     # đăng nhập bằng fb
     # 'ckeditor_uploader'
 ]
@@ -51,6 +52,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware', # CORS
     'social_django.middleware.SocialAuthExceptionMiddleware',   #fb
     # 'social_django.context_processors.backends'
 ]
@@ -144,22 +146,33 @@ REST_FRAMEWORK = {
 }
 
 # setting cho facebook
-AUTHENTICATION_BACKENDS = [
-    'social_core.backends.facebook.FacebookOAuth2',
-    'django.contrib.auth.backends.ModelBackend',
-]
-#
-LOGIN_URL = 'login'
-LOGIN_REDIRECT_URL = 'home'
-LOGOUT_URL = 'logout'
-LOGOUT_REDIRECT_URL = 'login'
-#
-SOCIAL_AUTH_FACEBOOK_KEY = '893789679094872'
-SOCIAL_AUTH_FACEBOOK_SECRET = '1c4cf1353d5a18d9b66b934a73a74336'
-#
-# #for extra infor
-SOCIAL_AUTH_FACEBOOK_SCOPE = [
-    'email',
-]
+# AUTHENTICATION_BACKENDS = [
+#     'social_core.backends.facebook.FacebookOAuth2',
+#     'django.contrib.auth.backends.ModelBackend',
+# ]
+# #
+# LOGIN_URL = 'login'
+# LOGIN_REDIRECT_URL = 'home'
+# LOGOUT_URL = 'logout'
+# LOGOUT_REDIRECT_URL = 'login'
+# #
+# SOCIAL_AUTH_FACEBOOK_KEY = '893789679094872'
+# SOCIAL_AUTH_FACEBOOK_SECRET = '1c4cf1353d5a18d9b66b934a73a74336'
+# #
+# # #for extra infor
+# SOCIAL_AUTH_FACEBOOK_SCOPE = [
+#     'email',
+# ]
+
+
+
+CLIENT_ID= "xGe4BZHA9CiNcpgZwPH7sGeO8urrdkJtDs9kDsom"
+CLIENT_SECRET = "KRNxDh3Ji8sOj9ufkrnyFO1zR2BicCQg02J5OQAXtnuXLpSQuWdY6ZsZpkm8wkMepEFrs8n2fCCtWkh1HUBCtae8LKtkaqKEl2DVpV3POlqqpYAZFYSZpgqrozyiMpJN"
+token_ad= "d6AH7YmiidBTlmrRoMMOjrEraVIhN6"
+
+CORS_ALLOW_ALL_ORIGINS = True
+
+
+
 
 
