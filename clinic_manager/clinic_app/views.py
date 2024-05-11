@@ -241,8 +241,21 @@ class PrescriptionMedicineViewSet(viewsets.ViewSet, generics.ListCreateAPIView):
     queryset = PrescriptionMedicine.objects.filter(active=True)
     serializer_class = serializers.PrescriptionMedicineSerializer
 
+class BillViewSet(viewsets.ViewSet, generics.ListAPIView):
+    queryset = Bill.objects.filter(active=True)
+    serializer_class = serializers.BillSerializer
 
+    @action(methods=['patch'], detail=True)
+    def comfirm_paid(self,request,pk):
+        bill = self.get_object()
+        if bill.status != 'unpaid':
+            return Response({"error": "This bill was paid!!!"}, status=status.HTTP_400_BAD_REQUEST)
 
+        bill.status = 'paid'
+        bill.save()
+
+        serializer = self.get_serializer(bill)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 import hmac, hashlib, urllib.parse, urllib.request, json, uuid
 from django.http import JsonResponse, HttpResponseBadRequest

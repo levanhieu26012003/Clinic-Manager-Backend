@@ -146,9 +146,13 @@ class Prescription(BaseModel):  # Đơn thuốc
 
 
 class Bill(BaseModel):  # Hoắ đơn
+    class statusChoices(models.TextChoices):
+        unpaid = "unpaid"
+        paid = "paid"
     prescription = models.OneToOneField(Prescription, related_name='bill', primary_key=True,
                                         on_delete=models.CASCADE, null=False)
     nurse = models.ForeignKey(Nurse, on_delete=models.SET_NULL, null=True)
+    status = models.CharField(max_length=10,choices=statusChoices,default=statusChoices.unpaid)
     total = models.FloatField()
 
 

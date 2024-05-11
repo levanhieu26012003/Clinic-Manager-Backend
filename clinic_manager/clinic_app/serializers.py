@@ -101,4 +101,4 @@ class PrescriptionSerializer(serializers.ModelSerializer):
 class BillSerializer(serializers.ModelSerializer):
     class Meta:
         model = Bill
-        fields = ['prescription','nurse','total']
+        fields = ['prescription','nurse','status''total']
