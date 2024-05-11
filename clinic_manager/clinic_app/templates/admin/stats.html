@@ -1,0 +1,61 @@
+{% extends 'admin/base_site.html' %}
+{% block content %}
+<h1>THỐNG KÊ THÔNG TIN CÁC KHOÁ HỌC</h1>
+<form method="get">
+    <span>
+        Thống kê người đến khám theo:
+    </span>
+    <span>
+    <select id="priod" name="period">
+        <option value="month" {% if period=='month' %} selected {% endif %}>Tháng</option>
+        <option value="quarter" {% if period=='quarter' %} selected {% endif %}>Quý</option>
+        <option value="year" {% if period=='year' %} selected {% endif %}>Năm</option>
+    </select>
+    </span>
+    <span>  Nhập năm:</span>
+    <span><input type="text" name="year_selected" value={{year_selected}}></span>
+    <button type="submit">Thống kê</button>
+</form>
+<ul>
+    {% for s in stats %}
+    <li><strong>Tháng {{ s.month }}</strong>: {{ s.count }}</li>
+    {% endfor %}
+</ul>
+
+<div style="width: 50%;">
+    <canvas id="myChart"></canvas>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    let labels = [];
+    let data = [];
+    {% for s in stats %}
+    labels.push('{{ s.month }}')
+    data.push({{ s.count }})
+    {% endfor %}
+    window.onload = function() {
+          const ctx = document.getElementById('myChart');
+
+          new Chart(ctx, {
+            type: 'bar',
+            data: {
+              labels: labels,
+              datasets: [{
+                label: '# Số lượng',
+                data: data,
+                borderWidth: 1,
+                backgroundColor: ['red', 'green', 'blue', 'gold']
+              }]
+            },
+            options: {
+              scales: {
+                y: {
+                  beginAtZero: true
+                }
+              }
+            }
+          });
+    }
+</script>
+{% endblock %}

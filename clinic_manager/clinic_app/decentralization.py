@@ -1,6 +1,6 @@
 from django.contrib.auth.models import Permission
 
-from clinic_manager.clinic_app.models import Admin
+from clinicmanager.clinicapp.models import Admin
 
 # Tạo một quyền mới cho admin để tìm kiếm nhân viên
 can_search_employee = Permission.objects.create(

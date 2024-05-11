@@ -30,10 +30,11 @@ class User(AbstractUser, BaseModel):
         Doctor = "Doctor"
         Nurse = "Nurse"
         Patient = "Patient"
+        Admin = "Admin"
 
-    phone_number = models.CharField(max_length=20)
-    sex = models.CharField(max_length=10, choices=GenderChoice, null=True)
-    avatar = CloudinaryField(null=True)
+    phone_number = models.CharField(max_length=20, blank=True)
+    sex = models.CharField(max_length=10, choices=GenderChoice, blank=True, null=True)
+    avatar = CloudinaryField(blank=True, null=True)
     role = models.CharField(null=False, choices=Role, default=Role.Patient, max_length=10)
 
     # class Meta:
@@ -74,14 +75,9 @@ class DoctorSchedule(BaseModel):
     schedule = models.ForeignKey(Schedule, on_delete=models.CASCADE)
 
 
-
-
 class NurseSchedule(BaseModel):
     nurse = models.ForeignKey(Nurse, on_delete=models.CASCADE)
     schedule = models.ForeignKey(Schedule, on_delete=models.CASCADE)
-
-
-
 
 
 class Appointment(BaseModel):
@@ -91,25 +87,28 @@ class Appointment(BaseModel):
         CANCELLED = 'cancelled',
         COMPLETE = 'complete',
 
+    class TimeChoises(models.TextChoices):
+        seven = '07:00:00',
+        eight = '08:00:00'
+        nine = '09:00:00'
+        ten = '10:00:00'
+        eleven = '11:00:00'
+        thirteen = '13:00:00'
+        fourteen = '14:00:00'
+        fifteen = '15:00:00'
+        sixteen = '16:00:00'
+        seventeen = '17:00:00'
+
         # class TimeChoice(models.TextChoices):
 
     #     Time = '80', 'Pending'
 
     patient = models.ForeignKey(Patient, on_delete=models.CASCADE, related_name='appointments')
-    doctor = models.ForeignKey(Doctor, on_delete=models.CASCADE, related_name='appointments')
-    nurse = models.ForeignKey(Nurse, on_delete=models.CASCADE, null=True, related_name='appointments')
-    time = models.TimeField()
-    date = models.DateField()
-    order_number = models.PositiveIntegerField()
+    doctor = models.ForeignKey(Doctor, on_delete=models.CASCADE, null=True, related_name='appointments', blank=True)
+    selected_time = models.TimeField(choices=TimeChoises, default=TimeChoises.seven)
+    selected_date = models.DateField()
+    # order_number = models.PositiveIntegerField()
     status = models.CharField(max_length=20, choices=StatusChoices, default=StatusChoices.PENDING)
-
-
-class Service(BaseModel):
-    name = models.CharField(max_length=25, null=False)
-    price = models.IntegerField(null=False)
-
-    def __str__(self):
-        return self.name
 
 
 class Medicine(BaseModel):
@@ -129,15 +128,21 @@ class Medicine(BaseModel):
 
     def __str__(self):
         return str(self.name) + " (" + str(self.unit) + ")"
-        return str(self.name) + " (" + str(self.unit) + ")"
 
+class Service(BaseModel):
+    name = models.CharField(max_length=25, null=False)
+    price = models.IntegerField(null=False)
+
+    def __str__(self):
+        return self.name
 
 class Prescription(BaseModel):  # Đơn thuốc
     appointment = models.OneToOneField(Appointment, related_name='prescription', primary_key=True,
                                        on_delete=models.CASCADE, null=False)
     symptom = models.CharField(max_length=255)  # Triệu chứng
     sick = models.CharField(max_length=255)
-    service = models.ForeignKey(Service, on_delete=models.CASCADE)
+    services = models.ManyToManyField(Service)
+
 
 
 class Bill(BaseModel):  # Hoắ đơn
@@ -148,6 +153,9 @@ class Bill(BaseModel):  # Hoắ đơn
 
 
 class PrescriptionMedicine(BaseModel):
-    medicine = models.ForeignKey(Medicine, on_delete=models.CASCADE, null=True)
-    prescription = models.ForeignKey(Prescription, on_delete=models.CASCADE, null=True)
+    medicine = models.ForeignKey(Medicine, related_name='prescription_medicine', on_delete=models.CASCADE, null=True)
+    prescription = models.ForeignKey(Prescription, related_name="prescription_medicine", on_delete=models.CASCADE,
+                                     null=True)
     quantity = models.PositiveSmallIntegerField()
+
+

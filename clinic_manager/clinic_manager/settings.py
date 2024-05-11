@@ -142,6 +142,7 @@ AUTH_USER_MODEL = 'clinic_app.User'
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'oauth2_provider.contrib.rest_framework.OAuth2Authentication',
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
     )
 }
 
@@ -164,15 +165,20 @@ REST_FRAMEWORK = {
 #     'email',
 # ]
 
-
-
-CLIENT_ID= "xGe4BZHA9CiNcpgZwPH7sGeO8urrdkJtDs9kDsom"
-CLIENT_SECRET = "KRNxDh3Ji8sOj9ufkrnyFO1zR2BicCQg02J5OQAXtnuXLpSQuWdY6ZsZpkm8wkMepEFrs8n2fCCtWkh1HUBCtae8LKtkaqKEl2DVpV3POlqqpYAZFYSZpgqrozyiMpJN"
-token_ad= "d6AH7YmiidBTlmrRoMMOjrEraVIhN6"
-
 CORS_ALLOW_ALL_ORIGINS = True
 
 
 
+client_id = "sfFK8kg2hRbUuVdpppgOhvmJXQJ13Z7YorKhIJmZ"
+client_secret = "dbEGQQwrIQMKyYFjvxxwJPuSRC3eUR0PfRpA3vkN6zZmbiBsw7BXOzmdyLv4IhCm3Ag5NmSoNaM4D4TWmEfz5xIpHTLSzphLR8bvCDRUiJcD0DENfpRLp3pru65WtFxq"
+
+#setting mail
+EMAIL_HOST_USER  ="levanhieu26012003@gmail.com"
+MAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_PASSWORD = "qjpw wfda arwp emls"
 
 
+MAX_APPOINTMENT = 5

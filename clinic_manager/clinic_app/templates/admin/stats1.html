@@ -1,0 +1,208 @@
+{% extends 'admin/base_site.html' %}
+
+{% block branding %}
+<div id="site-name"><a href="{% url 'admin:index' %}">{{ site_header|default:_('Hiếu Hậu') }}</a></div>
+{% endblock %}
+
+{% block content %}
+<style>
+    .custom-container {
+            width: 80%;
+            margin: 0 auto;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+        }
+
+        .custom-heading {
+            font-size: 24px;
+            font-weight: bold;
+            text-align: center;
+            margin-top: 20px;
+            margin-bottom: 20px;
+            color: green;
+        }
+
+        .chart-container {
+            width: 45%;
+            display: inline-block;
+            margin: 10px;
+        }
+
+        .header-group {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .header-group h2 {
+            width: 48%;
+        }
+
+        .dropdown-container {
+            margin-bottom: 10px;
+        }
+
+        .dropdown-container label {
+            display: block;
+            margin-bottom: 5px;
+        }
+</style>
+
+
+<div class="custom-container">
+    <h1 class="custom-heading">THỐNG KÊ SỐ LƯỢNG BỆNH NHÂN ĐẾN KHÁM VÀ DOANH THU</h1>
+
+    {% if period == 'month' %}
+    <h2>Số lượng bệnh nhân đến khám theo tháng</h2>
+    <ul>
+        {% for month, count in patient_stats.items %}
+        <li>Tháng {{ month }}: {{ count }}</li>
+        {% endfor %}
+    </ul>
+    {% elif period == 'quarter' %}
+    <h2>Số lượng bệnh nhân đến khám theo quý</h2>
+    <ul>
+        {% for quarter, count in patient_stats.items %}
+        <li>Quý {{ quarter }}: {{ count }}</li>
+        {% endfor %}
+    </ul>
+    {% elif period == 'year' %}
+    <h2>Số lượng bệnh nhân đến khám theo năm</h2>
+    <ul>
+        {% for year, count in patient_stats.items %}
+        <li>Năm {{ year }}: {{ count }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+
+    {% if period == 'month' %}
+    <h2>Doanh thu theo tháng</h2>
+    <ul>
+        {% for month, revenue in revenue_stats.items %}
+        <li>Tháng {{ month }}: {{ revene }} VNĐ</li>
+        {% endfor %}
+    </ul>
+    {% elif period == 'quarter' %}
+    <h2>Doanh thu theo quý</h2>
+    <ul>
+        {% for quarter, revenue in revenue_stats.items %}
+        <li>Quý {{ quarter }}: {{ revenue }} VNĐ</li>
+        {% endfor %}
+    </ul>
+    {% elif period == 'year' %}
+    <h2>Doanh thu theo năm</h2>
+    <ul>
+        {% for year, revenue in revenue_stats.items %}
+        <li>Năm {{ year }}: {{ revenue }} VNĐ</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+
+    <div class="dropdown-container">
+        <form method="GET">
+            <label for="period">Chọn khoảng thời gian:</label>
+            <select id="period" name="period">
+                <option value="month" {% if period == 'month' %} selected {% endif %}>Tháng</option>
+                <option value="quarter" {% if period == 'quarter' %} selected {% endif %}>Quý</option>
+                <option value="year" {% if period == 'year' %} selected {% endif %}>Năm</option>
+            </select>
+            <label for="year">Nhập năm</label>
+            <input type="number" id="year" name="year" value= {{year}}  >
+            <button type='submit' value='submit'>Thống Kê</button>
+        </form>
+    </div>
+
+    <div class="header-group">
+        <h2>Số lượng bệnh nhân</h2>
+        <h2>Doanh thu (VNĐ)</h2>
+    </div>
+    <div class="chart-container">
+        <canvas id="patientsChart"></canvas>
+    </div>
+
+    <div class="chart-container">
+        <canvas id="revenueChart"></canvas>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    let period = document.getElementById("period").value;
+    let patientsData = [];
+    let revenueData = [];
+    let labels = [];
+
+            {% if period == 'month' %}
+                {% for month, count in patient_stats.items %}
+                    labels.push('{{ month }}');
+                    patientsData.push({{ count }});
+                {% endfor %}
+                {% for month, revenue in revenue_stats.items %}
+                    revenueData.push({{ revenue }});
+                {% endfor %}
+            {% elif period == 'quarter' %}
+                {% for quarter, count in patient_stats.items %}
+                    labels.push('{{ quarter }}');
+                    patientsData.push({{ count }});
+                {% endfor %}
+                {% for quarter, revenue in revenue_stats.items %}
+                    revenueData.push({{ revenue }});
+                {% endfor %}
+            {% elif period == 'year' %}
+                {% for year, count in patient_stats.items %}
+                    labels.push('{{ year }}');
+                    patientsData.push({{ count }});
+                {% endfor %}
+                {% for year, revenue in revenue_stats.items %}
+                    revenueData.push({{ revenue }});
+                {% endfor %}
+            {% endif %}
+    window.onload = () => {
+        const patientsChart = new Chart(document.getElementById('patientsChart').getContext('2d'), {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Số lượng bệnh nhân',
+                        data: patientsData,
+                        borderColor: 'blue',
+                        tension: 0.1,
+                        backgroundColor: 'rgba(75, 126, 192, 0.5)'
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+
+            // Update revenue chart
+            const revenueChart = new Chart(document.getElementById('revenueChart').getContext('2d'), {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Doanh thu (VNĐ)',
+                        data: revenueData,
+                        borderColor: 'green',
+                        tension: 0.1,
+                        backgroundColor: 'rgba(75, 126, 192, 0.5)'
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        }
+
+</script>
+
+{% endblock %}

@@ -7,9 +7,12 @@ from . import views
 
 r = routers.DefaultRouter()
 r.register('medicines', views.MedicineViewSet, basename='Medicines')
-r.register('doctors', views.DoctorViewSet, basename='Doctor')
-r.register('nurses', views.NurseViewSet, basename='nurse')
+# r.register('doctors', views.DoctorViewSet, basename='Doctor')
+# r.register('nurses', views.NurseViewSet, basename='nurse')
 r.register('patients', views.PatientViewSet, basename='Patient')
+r.register('appointments', views.AppointmentViewSet, basename='Appointment')
+r.register('prescriptions', views.PrescriptionViewSet, basename='Prescription')
+r.register('prescription_medicines', views.PrescriptionMedicineViewSet, basename='PrescriptionMedicine')
 
 
 urlpatterns = [

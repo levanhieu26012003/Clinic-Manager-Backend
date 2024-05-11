@@ -7,12 +7,15 @@ cryptography==42.0.5
 DateTime==5.5
 defusedxml==0.8.0rc2
 Django==5.0.4
+django-cors-headers==4.3.1
 django-oauth-toolkit==2.3.0
 djangorestframework==3.15.1
+djangorestframework-simplejwt==5.3.1
 drf-yasg==1.21.7
 idna==3.6
 inflection==0.5.1
 jwcrypto==1.5.6
+momo==0.1.0
 mysqlclient==2.2.4
 oauthlib==3.2.2
 packaging==24.0
@@ -25,6 +28,7 @@ PyYAML==6.0.1
 requests==2.31.0
 requests-oauthlib==2.0.0
 setuptools==69.2.0
+sh==2.0.6
 six==1.16.0
 social-auth-app-django==5.4.0
 social-auth-core==4.5.3
