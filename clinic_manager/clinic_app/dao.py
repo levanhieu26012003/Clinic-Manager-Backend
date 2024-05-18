@@ -1,12 +1,15 @@
 from django.db.models import Count, Sum
 from datetime import datetime
+
+from django.forms import model_to_dict
+
 from .models import *
 
 
-def count_patient_appointments_by_period(period, year=None):
+def count_patient_appointments_by_period(period, year):
     # lấy năm hiện tại
-    if year is None:
-        year = datetime.now().year
+    # if year is None:
+    #     year = datetime.now().year
 
     if period == 'month':
         annotations = {
@@ -38,10 +41,9 @@ def count_patient_appointments_by_period(period, year=None):
     return results
 
 
-def calculate_revenue_by_period(period, year=None):
+def calculate_revenue_by_period(period, year):
     # lấy năm hiện tại
-    if year is None:
-        year = datetime.now().year
+
 
     if period == 'month':
         annotations = {
@@ -105,3 +107,12 @@ def count_total(prescription):
 
 def check_exist_appointment(date, time, patient):
     return Appointment.objects.filter(selected_date=date, selected_time=time, patient=patient).count() != 0
+
+
+def get_dict_medicine_by_id(id):
+    try:
+        medicine = Medicine.objects.get(id=id)
+        medicine_dict = model_to_dict(medicine)
+        return medicine_dict
+    except Medicine.DoesNotExist:
+        return None

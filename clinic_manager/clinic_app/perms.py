@@ -56,39 +56,28 @@
 
 from rest_framework import permissions
 
+
 class OwnerAuthenticated(permissions.IsAuthenticated):
     def has_object_permission(self, request, view, obj):
         return super().has_object_permission(request, view, obj) and request.user == obj.user
 
 
-class IsAdminOrRole(permissions.BasePermission):
+class BaseRole(permissions.BasePermission):
     allowed_roles = []
 
     def has_permission(self, request, view):
         if request.user.is_authenticated:
-            return request.user.role in self.allowed_roles or request.user.role == 'Admin'
+            return request.user.role in self.allowed_roles
         return False
 
 
-class IsAdmin(IsAdminOrRole):
-    allowed_roles = ['Admin']
-
-
-class IsDoctor(IsAdminOrRole):
+class IsDoctor(BaseRole):
     allowed_roles = ['Doctor']
 
 
-class IsNurse(IsAdminOrRole):
+class IsNurse(BaseRole):
     allowed_roles = ['Nurse']
 
 
-class IsPatient(IsAdminOrRole):
+class IsPatient(BaseRole):
     allowed_roles = ['Patient']
-
-
-class IsAdminOrDoctor(IsAdminOrRole):
-    allowed_roles = ['Admin', 'Doctor']
-
-
-class IsAdminOrPatient(IsAdminOrRole):
-    allowed_roles = ['Admin', 'Patient']

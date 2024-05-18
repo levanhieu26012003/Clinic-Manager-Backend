@@ -23,9 +23,9 @@ class MyAdminSite(admin.AdminSite):
         # stats = Appointment.objects.annotate(month=ExtractMonth('selected_time_date')).values('month').annotate(
         #     count=Count('month'))
         year = request.GET.get('year')
-        period = request.GET.get('period')
+        period = request.GET.get('period','month')
         patient_stats = count_patient_appointments_by_period(period=period,year=year)
-        revenue_stats = calculate_revenue_by_period(period=period)
+        revenue_stats = calculate_revenue_by_period(period=period,year=year)
 
         context = {
             'patient_stats': patient_stats,
@@ -78,14 +78,6 @@ class MedicineAdmin(admin.ModelAdmin):
     search_fields = ["name"]
 
 
-# class PatientAdmin(UserAdmin):
-#     model = Doctor
-#     fieldsets = (
-#             (None, {'fields': ('username', 'password')}),
-#             ('Personal Info', {'fields': ('first_name', 'last_name', 'email')}),
-#             ('Permissions', {'fields': ('is_active', 'is_staff')}),
-#             ('Important dates', {'fields': ('last_login', 'date_joined')}),
-#     )
 
 # fields = ['firstname', 'lastname']
 # fieldsets = ['firstname', 'lastname']

@@ -11,12 +11,6 @@ class ItemSerializer(serializers.ModelSerializer):
         return rep
 
 
-class MedicineSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Medicine
-        fields = ['id', 'name', 'price', 'unit', 'usage']
-
-
 class UserSerializer(ItemSerializer):
     class Meta:
         model = User
@@ -76,8 +70,14 @@ class AppointmentSerializer(serializers.ModelSerializer):
         fields = ['id', 'selected_time', 'selected_date', 'patient', 'doctor', 'status']
 
 
+class MedicineSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Medicine
+        fields = ['id', 'name', 'price', 'unit', 'usage']
+
+
 class PrescriptionMedicineSerializer(serializers.ModelSerializer):
-    medicine = MedicineSerializer()
+    medicine = MedicineSerializer
 
     class Meta:
         model = PrescriptionMedicine
@@ -87,18 +87,32 @@ class PrescriptionMedicineSerializer(serializers.ModelSerializer):
 class ServiceSerializer(serializers.ModelSerializer):
     class Meta:
         model = Service
-        fields = ['id','name','price']
+        fields = ['id', 'name', 'price']
+
 
 class PrescriptionSerializer(serializers.ModelSerializer):
-    prescription_medicine = PrescriptionMedicineSerializer(many=True)
-    services = ServiceSerializer(many=True)
+    prescription_medicine = PrescriptionMedicineSerializer(many=True, required=False)
+
+    services = ServiceSerializer(many=True, required=False)
 
     class Meta:
         model = Prescription
-        fields = ['appointment_id','symptom', 'sick', 'services', 'prescription_medicine']
+        fields = ['appointment', 'symptom', 'sick', 'services', 'prescription_medicine']
+        extra_kwargs = {
+            'services': {'required': False},
+            'prescription_medicine': {'required': False},
+        }
+
+    # def create(self, validated_data):
+    #     data = validated_data.pop('prescription_medicine', [])
+    #     prescription = Prescription.objects.create(**validated_data)
+    #     for d in data:
+    #         medicine = Medicine.objects.get(id=d['b']['id'])
+    #         PrescriptionMedicine.objects.create(prescription=prescription, medicine=medicine, quantity=d['quantity'])
+    #     return prescription
 
 
 class BillSerializer(serializers.ModelSerializer):
     class Meta:
         model = Bill
-        fields = ['prescription','nurse','status''total']
+        fields = ['prescription', 'nurse', 'status', 'total']

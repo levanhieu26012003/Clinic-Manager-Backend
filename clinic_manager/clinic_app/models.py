@@ -30,7 +30,6 @@ class User(AbstractUser, BaseModel):
         Doctor = "Doctor"
         Nurse = "Nurse"
         Patient = "Patient"
-        Admin = "Admin"
 
     phone_number = models.CharField(max_length=20, blank=True)
     sex = models.CharField(max_length=10, choices=GenderChoice, blank=True, null=True)
@@ -56,11 +55,6 @@ class Nurse(User):
 
     class Meta:
         verbose_name = "Nurse"
-
-
-class Admin(User):
-    class Meta:
-        verbose_name = "Admin"
 
 
 class Patient(User):
@@ -129,6 +123,7 @@ class Medicine(BaseModel):
     def __str__(self):
         return str(self.name) + " (" + str(self.unit) + ")"
 
+
 class Service(BaseModel):
     name = models.CharField(max_length=25, null=False)
     price = models.IntegerField(null=False)
@@ -136,24 +131,14 @@ class Service(BaseModel):
     def __str__(self):
         return self.name
 
+
 class Prescription(BaseModel):  # Đơn thuốc
     appointment = models.OneToOneField(Appointment, related_name='prescription', primary_key=True,
-                                       on_delete=models.CASCADE, null=False)
+                                        on_delete=models.CASCADE, null=False)
     symptom = models.CharField(max_length=255)  # Triệu chứng
     sick = models.CharField(max_length=255)
-    services = models.ManyToManyField(Service)
-
-
-
-class Bill(BaseModel):  # Hoắ đơn
-    class statusChoices(models.TextChoices):
-        unpaid = "unpaid"
-        paid = "paid"
-    prescription = models.OneToOneField(Prescription, related_name='bill', primary_key=True,
-                                        on_delete=models.CASCADE, null=False)
-    nurse = models.ForeignKey(Nurse, on_delete=models.SET_NULL, null=True)
-    status = models.CharField(max_length=10,choices=statusChoices,default=statusChoices.unpaid)
-    total = models.FloatField()
+    services = models.ManyToManyField(Service, blank=True)
+    medicine = models.ManyToManyField(Medicine, blank=True, through='PrescriptionMedicine')
 
 
 class PrescriptionMedicine(BaseModel):
@@ -163,3 +148,13 @@ class PrescriptionMedicine(BaseModel):
     quantity = models.PositiveSmallIntegerField()
 
 
+class Bill(BaseModel):  # Hoắ đơn
+    class statusChoices(models.TextChoices):
+        unpaid = "unpaid"
+        paid = "paid"
+
+    prescription = models.OneToOneField(Prescription, related_name='bill', primary_key=True,
+                                        on_delete=models.CASCADE, null=False)
+    nurse = models.ForeignKey(Nurse, on_delete=models.SET_NULL, null=True)
+    status = models.CharField(max_length=10, choices=statusChoices, default=statusChoices.unpaid)
+    total = models.FloatField()

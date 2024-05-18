@@ -12,8 +12,9 @@ r.register('medicines', views.MedicineViewSet, basename='Medicines')
 r.register('patients', views.PatientViewSet, basename='Patient')
 r.register('appointments', views.AppointmentViewSet, basename='Appointment')
 r.register('prescriptions', views.PrescriptionViewSet, basename='Prescription')
-r.register('prescription_medicines', views.PrescriptionMedicineViewSet, basename='PrescriptionMedicine')
+r.register('services', views.ServiceViewSet, basename='Service')
 r.register('bills', views.BillViewSet, basename='Bill')
+# r.register('momo', views.Mo, basename='Bill')
 
 
 urlpatterns = [
