@@ -24,7 +24,7 @@ SECRET_KEY = 'django-insecure-0jpo=x9qvt-*8h5@fae&@z50tvl*iu$#3#e*@$1ww&=h6844@j
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['192.168.1.34','127.0.0.1']
+ALLOWED_HOSTS = ['192.168.1.34', '127.0.0.1', 'localhost','3303-171-243-48-141.ngrok-free.app']
 
 # Application definition
 
@@ -40,8 +40,10 @@ INSTALLED_APPS = [
     'drf_yasg',
     'oauth2_provider',
     'corsheaders',
-    'social_django'     # đăng nhập bằng fb
-    # 'ckeditor_uploader'
+    'social_django',  # đăng nhập bằng fb
+    # 'ckeditor_uploader',
+    # "django_extensions", #https
+    'django_celery_results',
 ]
 
 MIDDLEWARE = [
@@ -52,8 +54,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'corsheaders.middleware.CorsMiddleware', # CORS
-    'social_django.middleware.SocialAuthExceptionMiddleware',   #fb
+    'corsheaders.middleware.CorsMiddleware',  # CORS
+    'social_django.middleware.SocialAuthExceptionMiddleware',  # fb
     # 'social_django.context_processors.backends'
 ]
 
@@ -134,7 +136,8 @@ import cloudinary
 cloudinary.config(
     cloud_name="dlkfozznl",
     api_key="216689541712763",
-    api_secret="m_IQI6lLGClNtrf8ZeuG97Do4Fs"
+    api_secret="m_IQI6lLGClNtrf8ZeuG97Do4Fs",
+    secure=True,
 )
 
 AUTH_USER_MODEL = 'clinic_app.User'
@@ -167,18 +170,45 @@ REST_FRAMEWORK = {
 
 CORS_ALLOW_ALL_ORIGINS = True
 
-
-
+# APP info
 client_id = "sfFK8kg2hRbUuVdpppgOhvmJXQJ13Z7YorKhIJmZ"
 client_secret = "dbEGQQwrIQMKyYFjvxxwJPuSRC3eUR0PfRpA3vkN6zZmbiBsw7BXOzmdyLv4IhCm3Ag5NmSoNaM4D4TWmEfz5xIpHTLSzphLR8bvCDRUiJcD0DENfpRLp3pru65WtFxq"
 
-#setting mail
-EMAIL_HOST_USER  ="levanhieu26012003@gmail.com"
+# setting mail
+EMAIL_HOST_USER = "levanhieu26012003@gmail.com"
 MAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_PASSWORD = "qjpw wfda arwp emls"
 
-
 MAX_APPOINTMENT = 5
+
+# settings.py
+ZALOPAY_APP_ID = 2553
+ZALOPAY_KEY1 = 'PcY4iZIKFCIdgZvA6ueMcMHHUbRLYjPL'
+ZALOPAY_KEY2 = 'kLtgPl8HHhfvMuDHPwKfgfsY4Ydm9eIz'
+ZALOPAY_ENDPOINT_CREATE = 'https://sb-openapi.zalopay.vn/v2/create'
+ZALOPAY_ENDPOINT_QUERY = 'https://sb-openapi.zalopay.vn/v2/query'
+
+# setting auto
+# myapp/settings.py
+
+# Cấu hình broker cho Celery (sử dụng Redis ở đây)
+CELERY_BROKER_URL = 'redis://127.0.0.1:6379'
+CELERY_RESULT_BACKEND = 'django-db'
+
+
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_TIMEZONE = "Asia/Ho_Chi_Minh"
+
+from celery.schedules import crontab
+
+CELERY_BEAT_SCHEDULE = {
+    'update-appointment-status-every-minute': {
+        'task': 'clinic_app.tasks.send_notification_email',
+        'schedule': crontab(minute='*/1'),  # Chạy mỗi phút
+    },
+}

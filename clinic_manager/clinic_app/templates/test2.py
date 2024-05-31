@@ -1,0 +1,3 @@
+# {'appid': 553, 'appuser': 'demo', 'apptime': 1716308202728, 'amount': '10000', 'apptransid': '240521_baccd701-201c-4d78-9137-f354fd438cc1', 'embeddata': '{"merchantinfo": "embeddata123"}', 'item': '[{"itemid": "knb", "itemname": "Pham Ba Trung Hieu", "itemprice": 99999, "itemquantity": 1}]', 'description': 'Phòng Khám Tư Lộc Hiếu', 'bankcode': 'zalopayapp', 'mac': '01d455e3659d2b1f8dd55cce5238d0cfa817bf36498b5b075de81517fd59dbee'}
+#
+# {'appuser': 'demo_user', 'amount': 100000, 'description': 'Test Order', 'bankcode': '', 'item': '[]', 'embeddata': '{}', 'appid': 553, 'apptransid': '240521_1716308426729', 'apptime': 1716308426729, 'mac': '460a7eb61c218e08d9c5619a16911a524314a3c131ee5888cd215348c382d2b8'}

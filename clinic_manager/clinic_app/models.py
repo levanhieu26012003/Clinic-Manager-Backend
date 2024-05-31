@@ -79,10 +79,10 @@ class Appointment(BaseModel):
         PENDING = 'pending',
         APPROVED = 'approved',
         CANCELLED = 'cancelled',
-        COMPLETE = 'complete',
+        COMPLETE = 'completed',
 
     class TimeChoises(models.TextChoices):
-        seven = '07:00:00',
+        seven = "07:00:00",
         eight = '08:00:00'
         nine = '09:00:00'
         ten = '10:00:00'
@@ -93,15 +93,11 @@ class Appointment(BaseModel):
         sixteen = '16:00:00'
         seventeen = '17:00:00'
 
-        # class TimeChoice(models.TextChoices):
-
-    #     Time = '80', 'Pending'
-
     patient = models.ForeignKey(Patient, on_delete=models.CASCADE, related_name='appointments')
     doctor = models.ForeignKey(Doctor, on_delete=models.CASCADE, null=True, related_name='appointments', blank=True)
     selected_time = models.TimeField(choices=TimeChoises, default=TimeChoises.seven)
     selected_date = models.DateField()
-    # order_number = models.PositiveIntegerField()
+    notify = models.BooleanField(default=False)
     status = models.CharField(max_length=20, choices=StatusChoices, default=StatusChoices.PENDING)
 
 
@@ -134,7 +130,7 @@ class Service(BaseModel):
 
 class Prescription(BaseModel):  # Đơn thuốc
     appointment = models.OneToOneField(Appointment, related_name='prescription', primary_key=True,
-                                        on_delete=models.CASCADE, null=False)
+                                       on_delete=models.CASCADE, null=False)
     symptom = models.CharField(max_length=255)  # Triệu chứng
     sick = models.CharField(max_length=255)
     services = models.ManyToManyField(Service, blank=True)
@@ -147,6 +143,9 @@ class PrescriptionMedicine(BaseModel):
                                      null=True)
     quantity = models.PositiveSmallIntegerField()
 
+    class Meta:
+        unique_together = ("medicine", "prescription")
+
 
 class Bill(BaseModel):  # Hoắ đơn
     class statusChoices(models.TextChoices):
@@ -158,3 +157,4 @@ class Bill(BaseModel):  # Hoắ đơn
     nurse = models.ForeignKey(Nurse, on_delete=models.SET_NULL, null=True)
     status = models.CharField(max_length=10, choices=statusChoices, default=statusChoices.unpaid)
     total = models.FloatField()
+    zalopay_id = models.CharField(null=True, max_length=30)

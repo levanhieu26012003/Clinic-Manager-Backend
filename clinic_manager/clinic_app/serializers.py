@@ -3,54 +3,28 @@ from .models import *
 
 
 class ItemSerializer(serializers.ModelSerializer):
+    # def to_representation(self, instance):
+    #     rep = super().to_representation(instance)
+    #     if rep['avatar'] is not None:
+    #         print(rep['avatar'])
+    #         rep['avatar'] = instance.avatar.url
+    #     return rep
+
     def to_representation(self, instance):
-        rep = super().to_representation(instance)
-        if rep['avatar'] is not None:
-            rep['avatar'] = instance.avatar.url
-
-        return rep
-
-
-class UserSerializer(ItemSerializer):
-    class Meta:
-        model = User
-        fields = ['id', 'first_name', 'last_name', 'username', 'password', 'phone_number', 'sex',
-                  'avatar', 'role']
-        extra_kwargs = {'password': {'write_only': True}}  # Ẩn mật khẩu khi trả về
+        representation = super().to_representation(instance)
+        avatar_url = representation.get('avatar')
+        if avatar_url and avatar_url.startswith('image/upload/'):
+            # Remove 'image/upload/' prefix
+            avatar_url = avatar_url.replace('image/upload/', '', 1)
+            representation['avatar'] = avatar_url
+        return representation
 
 
-class DoctorSerializer(UserSerializer):
-    class Meta:
-        model = Doctor
-        fields = UserSerializer.Meta.fields + ['speciality']
-        extra_kwargs = {'password': {'write_only': True}}  # Ẩn mật khẩu khi trả về
-
-    def create(self, validated_data):
-        user = Doctor(**validated_data)
-        user.set_password(validated_data['password'])
-        user.save()
-
-        return user
-
-
-class NurseSerializer(UserSerializer):
-    class Meta:
-        model = Nurse
-        fields = UserSerializer.Meta.fields + ['department']
-        extra_kwargs = {'password': {'write_only': True}}  # Ẩn mật khẩu khi trả về
-
-    def create(self, validated_data):
-        user = Nurse(**validated_data)
-        user.set_password(validated_data['password'])
-        user.save()
-
-        return user
-
-
-class PatientSerializer(UserSerializer):
+class PatientSerializer(ItemSerializer):
     class Meta:
         model = Patient
-        fields = UserSerializer.Meta.fields + ['date_of_birth', 'email']
+        fields = ['id', 'first_name', 'last_name', 'username', 'password', 'phone_number', 'sex',
+                  'avatar', 'role', 'date_of_birth', 'email']
         extra_kwargs = {'password': {'write_only': True}}  # Ẩn mật khẩu khi trả về
 
     def create(self, validated_data):
@@ -63,7 +37,6 @@ class PatientSerializer(UserSerializer):
 
 class AppointmentSerializer(serializers.ModelSerializer):
     patient = PatientSerializer
-    doctor = DoctorSerializer
 
     class Meta:
         model = Appointment
@@ -115,4 +88,9 @@ class PrescriptionSerializer(serializers.ModelSerializer):
 class BillSerializer(serializers.ModelSerializer):
     class Meta:
         model = Bill
-        fields = ['prescription', 'nurse', 'status', 'total']
+        fields = ['prescription', 'nurse', 'status', 'total','zalopay_id']
+
+
+class CreatePaymentSerializer(serializers.Serializer):
+    amount = serializers.IntegerField(required=True)
+    description = serializers.CharField(required=True)
